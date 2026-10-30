@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>プラトンの眼</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=GFS+Didot&family=Shippori+Mincho:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<main class="sheet">
+
+  <!-- タイトル -->
+  <section class="screen" id="title">
+    <div class="title-top">
+      <figure class="plato" hidden>
+        <img src="img/plato.jpg" alt="プラトンの胸像">
+        <figcaption>プラトン胸像（ローマ時代の複製）<br>Photo: Marie-Lan Nguyen / Wikimedia Commons, CC BY 2.5</figcaption>
+      </figure>
+      <div class="title-text">
+        <header class="inscription">
+          <h1 class="greek-title" lang="grc">Ο ΟΦΘΑΛΜΟΣ ΤΟΥ ΠΛΑΤΩΝΟΣ</h1>
+          <p class="jp-title">プラトンの眼</p>
+          <p class="jp-reading">ホ・オプタルモス・トゥー・プラトーノス</p>
+        </header>
+        <div class="primer">
+          <section>
+            <h2 class="rubric">プラトンとは</h2>
+            <p>紀元前5〜4世紀、古代ギリシャのアテナイの哲学者。ソクラテスの弟子で、学園アカデメイアを開いた。目に見える物の奥に、変わることのない本当の姿があると考えた。</p>
+          </section>
+          <section>
+            <h2 class="rubric">イデアとは</h2>
+            <p>物が「それ」であるための本質。美しい物は「美そのもの」を分有することで美しい。この眼は物を写さず、物の奥にあるイデアを写す。</p>
+          </section>
+        </div>
+      </div>
+    </div>
+    <nav class="gates" aria-label="入口">
+      <button class="gate" data-action="observe">
+        <span class="gate-name">観測</span>
+        <span class="gate-desc">身の回りの物を撮り、そのイデアを図鑑に収める</span>
+        <kbd>1</kbd>
+      </button>
+      <button class="gate" data-action="quest" id="gate-quest">
+        <span class="gate-name">探究</span>
+        <span class="gate-desc">お題のイデアを分有する物を、制限時間内に探す</span>
+        <kbd>2</kbd>
+      </button>
+      <button class="gate" data-action="scroll">
+        <span class="gate-name">図鑑</span>
+        <span class="gate-desc">集まったイデアを巻物で読む</span>
+        <kbd>Z</kbd>
+      </button>
+    </nav>
+    <footer class="title-foot">
+      <label class="camera-pick">カメラ
+        <select id="camera-select"><option value="">既定のカメラ</option></select>
+      </label>
+      <span id="mode-badge" class="badge" hidden>お試しモード</span>
+      <span id="quest-unavailable" class="note" hidden>お題の一覧を読み込めません。観測と図鑑は使えます。</span>
+    </footer>
+  </section>
+
+  <!-- 観測：撮影 -->
+  <section class="screen" id="observe" hidden>
+    <div class="stage">
+      <div class="frame cam-slot"></div>
+      <aside class="controls">
+        <p class="hint">物をカメラの前にかざして、撮影してください。</p>
+        <button class="btn primary" data-action="shoot">撮影 <kbd>Space</kbd></button>
+        <button class="btn" data-action="scroll">図鑑 <kbd>Z</kbd></button>
+        <button class="btn quiet" data-action="title">タイトルへ <kbd>Esc</kbd></button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 分析中 -->
+  <section class="screen" id="analyzing" hidden>
+    <div class="analyzing">
+      <img class="analyzing-photo" alt="">
+      <div class="analyzing-words">
+        <figure class="analyzing-bust" hidden><img src="img/plato.jpg" alt=""></figure>
+        <p class="analyzing-text">分析中…</p>
+        <p class="analyzing-saying" aria-live="polite"></p>
+      </div>
+      <p class="analyzing-remain" hidden></p>
+    </div>
+  </section>
+
+  <!-- 観測：結果 -->
+  <section class="screen" id="result" hidden>
+    <div class="reading-room"></div>
+    <div class="ask">
+      <p class="ask-q">保存しますか？</p>
+      <button class="btn primary" data-action="save">はい <kbd>Y</kbd></button>
+      <button class="btn" data-action="discard">いいえ <kbd>N</kbd></button>
+    </div>
+  </section>
+
+  <!-- 図鑑（巻物） -->
+  <section class="screen" id="scroll" hidden>
+    <header class="scroll-head">
+      <h2 class="rubric scroll-title">図鑑</h2>
+      <p class="scroll-count"></p>
+      <span class="spacer"></span>
+      <label class="scroll-search">
+        <span class="visually-hidden">語・読みで探す</span>
+        <input id="scroll-search" type="search" placeholder="語・読みで探す（F）" autocomplete="off" spellcheck="false">
+      </label>
+      <button class="btn quiet" data-action="clear-ideas">全部消す</button>
+      <button class="btn" data-action="title" autofocus>タイトルへ <kbd>Esc</kbd></button>
+    </header>
+    <div class="scroll-roll">
+      <div class="scroll-track" tabindex="-1"></div>
+    </div>
+    <p class="note scroll-help">ホイールか <kbd>←</kbd><kbd>→</kbd> で巻物を送ります。札を押すと詳しく読めます。</p>
+  </section>
+
+  <!-- 詳しい表示（図鑑の上に重なる） -->
+  <section class="screen overlay" id="detail" hidden>
+    <article class="detail-panel" role="dialog" aria-modal="true" aria-label="イデアの詳しい表示">
+      <div class="frame detail-photo"><img class="idea" alt="イデアの写真"></div>
+      <div class="detail-text">
+        <p class="entry">
+          <span class="headword"></span>
+          <span class="reading"></span>
+          <span class="greek" lang="grc"></span>
+          <span class="greek-reading"></span>
+        </p>
+        <p class="definition"></p>
+        <p class="participation"></p>
+        <p class="seal" hidden></p>
+        <figure class="detail-original">
+          <div class="frame"><img class="original" alt="観測した物の写真"></div>
+          <figcaption></figcaption>
+        </figure>
+        <div class="detail-actions">
+          <button class="btn" data-action="close-detail" autofocus>閉じる <kbd>Esc</kbd></button>
+          <button class="btn quiet" data-action="delete-card">この記録を消す</button>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- イデア化の失敗（洞窟の影） -->
+  <section class="screen" id="idea-fail" hidden>
+    <div class="idea-fail">
+      <div class="idea-fail-wall"><img class="idea-fail-photo" alt=""></div>
+      <div class="idea-fail-text" role="alert">
+        <h2 class="idea-fail-title">影しか見えませんでした</h2>
+        <p class="idea-fail-story">洞窟の囚人は、壁に映る影しか見ることができません。<br>今回は、眼がイデアまで届きませんでした。</p>
+        <button class="btn primary" autofocus>もう一度観測する <kbd>Space</kbd></button>
+        <p class="note idea-fail-reason"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- エラー -->
+  <section class="screen" id="error" hidden>
+    <div class="error-box" role="alert">
+      <h2 class="rubric">観測できませんでした</h2>
+      <p class="error-message"></p>
+      <p class="note">何かキーを押すか、画面を押すと戻ります。</p>
+    </div>
+  </section>
+
+  <!-- 探究 -->
+  <section class="screen" id="q-intro" hidden>
+    <div class="q-intro">
+      <p class="rubric q-label">探究のお題</p>
+      <p class="q-word"></p>
+      <p class="q-sub"><span class="q-reading"></span><span class="greek q-greek" lang="grc"></span></p>
+      <p class="q-command">これを分有する物を探せ</p>
+      <p class="note q-rule"></p>
+      <div class="q-actions">
+        <button class="btn primary" data-action="quest-start" autofocus>始める <kbd>Space</kbd></button>
+        <button class="btn quiet" data-action="title">タイトルへ <kbd>Esc</kbd></button>
+      </div>
+    </div>
+    <aside class="q-ranking">
+      <h2 class="rubric">速く見つけた探究者</h2>
+      <ol class="q-ranking-list"></ol>
+    </aside>
+  </section>
+
+  <section class="screen" id="q-hunt" hidden>
+    <div class="stage">
+      <div class="frame cam-slot"></div>
+      <aside class="controls">
+        <p class="q-hunt-word"></p>
+        <p class="hint">を分有する物を探して、撮影してください。</p>
+        <p class="q-remain-box">残り <span class="q-remain"></span> 秒</p>
+        <button class="btn primary" data-action="quest-shoot">撮影 <kbd>Space</kbd></button>
+        <button class="btn quiet" data-action="title">やめる <kbd>Esc</kbd></button>
+      </aside>
+    </div>
+  </section>
+
+  <section class="screen" id="q-miss" hidden>
+    <div class="reading-room"></div>
+    <div class="ask">
+      <p class="q-verdict"><span class="q-verdict-text"></span><span class="q-reason"></span></p>
+      <p class="q-remain-box">残り <span class="q-remain"></span> 秒</p>
+      <button class="btn primary" data-action="quest-again" autofocus>また探す <kbd>Space</kbd></button>
+    </div>
+  </section>
+
+  <section class="screen" id="q-clear" hidden>
+    <header class="q-clear-head">
+      <p class="q-clear-title">探究達成</p>
+      <p class="q-clear-stats"><span class="q-seconds"></span><span class="q-rank"></span></p>
+      <p class="q-reason"></p>
+    </header>
+    <div class="reading-room"></div>
+    <div class="ask">
+      <p class="ask-q">図鑑に保存しますか？</p>
+      <button class="btn primary" data-action="quest-save" autofocus>はい <kbd>Y</kbd></button>
+      <button class="btn" data-action="title">いいえ <kbd>N</kbd></button>
+    </div>
+  </section>
+
+  <section class="screen" id="q-timeup" data-action="title" hidden>
+    <div class="q-timeup">
+      <p class="q-timeup-title">時間切れ</p>
+      <p class="q-timeup-word"></p>
+      <div class="q-examples"><p>例：</p><ul></ul></div>
+      <p class="note">ほかにも、このイデアを分有する物はたくさんあります。何かキーを押すとタイトルへ戻ります。</p>
+    </div>
+  </section>
+
+  <template id="tpl-reading">
+    <div class="pair">
+      <figure>
+        <div class="frame"><img class="original" alt="観測した物の写真"></div>
+        <figcaption>観測した物</figcaption>
+      </figure>
+      <figure>
+        <div class="frame"><img class="idea" alt="物が消え、イデアの語が現れた写真"></div>
+        <figcaption>イデア</figcaption>
+      </figure>
+    </div>
+    <article class="plate">
+      <p class="entry">
+        <span class="headword"></span>
+        <span class="reading"></span>
+        <span class="greek" lang="grc"></span>
+        <span class="greek-reading"></span>
+      </p>
+      <p class="definition"></p>
+      <p class="participation"></p>
+    </article>
+  </template>
+
+  <video id="camera" muted playsinline autoplay></video>
+</main>
+</body>
+</html>

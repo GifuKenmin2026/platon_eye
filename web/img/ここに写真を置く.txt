@@ -1,0 +1,6 @@
+ここに plato.jpg を置くと、タイトル画面にプラトンの写真が出ます。
+
+写真：Plato Silanion Musei Capitolini MC1377
+https://commons.wikimedia.org/wiki/File:Plato_Silanion_Musei_Capitolini_MC1377.jpg
+Photo: Marie-Lan Nguyen / Wikimedia Commons, CC BY 2.5
+（画面に表記を出しているので、このまま使えます）
